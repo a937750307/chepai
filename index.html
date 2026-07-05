@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>中国车牌归属地查询</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <!-- 忆痕发布页 www.937788.xyz -->
+    <div class="header">
+      <h1>中国车牌归属地查询</h1>
+      <div class="header-actions">
+        <button class="btn-icon" id="themeToggle" title="深色/浅色模式切换" aria-label="切换深色浅色模式">&#9788;</button>
+      </div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div class="tab-nav">
+      <button class="active" data-tab="reverse">城市查询</button>
+      <button data-tab="batch">车牌号批量查询</button>
+      <button data-tab="region">地区分类</button>
+      <button data-tab="knowledge">车牌知识</button>
+    </div>
+
+    <!-- ====== 城市查询 ====== -->
+    <div class="tab-panel active" id="tab-reverse">
+      <div class="card">
+        <div class="card-header">输入城市名，列出该城市所有车牌代码</div>
+        <div class="input-row">
+          <input type="text" id="reverseInput" placeholder="如 杭州、苏州、深圳" autocomplete="off">
+          <button class="btn btn-primary" id="reverseSearch">查询</button>
+        </div>
+      </div>
+      <div id="reverseResult"></div>
+    </div>
+
+    <!-- ====== 批量查询 ====== -->
+    <div class="tab-panel" id="tab-batch">
+      <div class="card">
+        <div class="card-header">每行一个车牌号，一次性批量输出归属地结果</div>
+        <div class="input-row" style="flex-direction:column">
+          <textarea id="batchInput" placeholder="京A12345&#10;沪AD12345&#10;粤B67890&#10;浙A88888"></textarea>
+          <button class="btn btn-primary" id="batchSearch" style="align-self:flex-end">批量查询</button>
+        </div>
+      </div>
+      <div id="batchResult"></div>
+    </div>
+
+    <!-- ====== 地区分类 ====== -->
+    <div class="tab-panel" id="tab-region">
+      <p style="font-size:.9rem;color:var(--text-secondary);margin-bottom:16px">按华北 / 华东 / 华南等大区分类，点击展开查看各省份城市车牌</p>
+      <div id="regionContent"></div>
+    </div>
+
+    <!-- ====== 车牌知识 ====== -->
+    <div class="tab-panel" id="tab-knowledge">
+      <!-- 车牌类型科普 -->
+      <div class="card">
+        <div class="card-header">车牌类型科普</div>
+        <ul class="rules-list">
+          <li><strong>蓝牌</strong>：小型汽车号牌，蓝底白字白框线，440×140mm，常见于私家车、小客车。</li>
+          <li><strong>绿牌</strong>：新能源汽车号牌，绿底黑字，480×140mm，纯电动/插电混动。</li>
+          <li><strong>黄牌</strong>：大型汽车号牌，黄底黑字黑框线，前440×220mm / 后440×140mm，大客车、大货车、教练车。</li>
+          <li><strong>白牌</strong>：军警政法号牌，白底黑字/红字，440×140mm，军车、警车、法院、检察。</li>
+          <li><strong>黑牌</strong>：外籍/涉外号牌，黑底白字，440×140mm，使馆、领事馆、外资企业。</li>
+        </ul>
+      </div>
+
+      <!-- 编码规则 -->
+      <div class="card">
+        <div class="card-header">车牌编码规则说明</div>
+        <ul class="rules-list">
+          <li><strong>第 1 位 — 省份简称</strong>：汉字，代表车辆注册所在省/自治区/直辖市。如 京=北京、沪=上海、粤=广东。</li>
+          <li><strong>第 2 位 — 城市代码</strong>：英文字母，代表该省内的地级市。A 通常为省会，其余按城市规模/经济排序分配。</li>
+          <li><strong>第 3-7 位 — 序号</strong>：5 位数字或字母+数字混合（不含 I、O），蓝牌为随机生成。</li>
+          <li><strong>新能源绿牌</strong>：共 8 位。第 3 位 D=纯电动，F=非纯电动（插混等），后 5 位为数字。</li>
+          <li><strong>小型新能源</strong>：渐变绿底，D/F 在第 3 位。大型新能源：黄绿双拼底，D/F 在末位（第 8 位）。</li>
+        </ul>
+      </div>
+
+      <!-- 特殊车牌 -->
+      <div class="card">
+        <div class="card-header">特殊车牌识别</div>
+        <ul class="rules-list">
+          <li><strong>使馆车牌 (使)</strong>：黑底白字，格式为"使XXX·XXX"（如 使224·001），代表外国驻华使馆车辆。</li>
+          <li><strong>领事馆车牌 (领)</strong>：黑底白字，格式为"X·领XXXX"（如 沪·领0123），代表外国驻华领事馆车辆。</li>
+          <li><strong>军车</strong>：白底红/黑字，格式多位如"V·AXXXXX"、"K·DXXXXX"等，代表中国人民解放军车辆。</li>
+          <li><strong>武警</strong>：白底红字，格式"WJ·XXXXX"，代表武警部队车辆。</li>
+          <li><strong>警车</strong>：白底黑字，末尾有红色"警"字，代表公安、国安、司法等警务车辆。</li>
+          <li><strong>教练车 (学)</strong>：黄底黑字，末尾有"学"字，用于驾校教学车辆。</li>
+          <li><strong>试车 (试)</strong>：用于汽车厂家测试车辆，末尾有"试"字。</li>
+          <li><strong>临时车牌 (临)</strong>：纸质临时号牌，用于新车未上牌期间上路行驶。</li>
+          <li><strong>港/澳</strong>：粤ZXXXX港(澳)，用于来往内地与港澳的跨境车辆。</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="beian-bar">
+      <div class="beian-pc">
+        <span class="beian-disclaimer">本站内容仅供学习和交流，非商业用途</span>
+        <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer" class="beian-icp">浙ICP备2025187466号</a>
+        <a href="https://www.beian.gov.cn/portal/registerSystemInfo?recordcode=33030402001483" target="_blank" rel="noopener noreferrer" class="beian-gongan">
+          <img src="https://www.937788.xyz/gonganbeian.png" alt="公安备案" onerror="this.style.display='none'">
+          浙公网安备33030402001483号
+        </a>
+      </div>
+      <div class="beian-mobile">
+        <span class="beian-disclaimer">本站内容仅供学习和交流，非商业用途</span>
+        <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer" class="beian-icp">浙ICP备2025187466号</a>
+        <a href="https://www.beian.gov.cn/portal/registerSystemInfo?recordcode=33030402001483" target="_blank" rel="noopener noreferrer" class="beian-gongan">
+          <img src="https://www.937788.xyz/gonganbeian.png" alt="公安备案" onerror="this.style.display='none'">
+          浙公网安备33030402001483号
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
